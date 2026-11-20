@@ -1,5 +1,5 @@
 // swift-tools-version: 5.9
-// MSP iOS SDK 3.5.2 as a binary Swift package.
+// MSP iOS SDK 3.5.2 as a binary Swift package (package version 3.5.3; see README).
 //
 // Every binary target is an unmodified xcframework from the 3.5.2 release of
 // https://github.com/ParticleMedia/msp-ios-sdk-public:
@@ -20,8 +20,11 @@ let package = Package(
         .library(name: "MSPGoogleAdapter", targets: ["MSPGoogleAdapterSPM"]),
         .library(name: "MSPFacebookAdapter", targets: ["MSPFacebookAdapterSPM"]),
     ],
+    // Google Mobile Ads is deliberately NOT a package dependency: SwiftPM applies every listed
+    // dependency's version range to all clients, even those that never use MSPGoogleAdapter, which
+    // would block apps on GMA 13 (e.g. via AppLovin MAX). Apps using MSPGoogleAdapter add the
+    // GoogleMobileAds product themselves (see README).
     dependencies: [
-        .package(url: "https://github.com/googleads/swift-package-manager-google-mobile-ads.git", "12.0.0"..<"13.0.0"),
         .package(url: "https://github.com/facebook/FBAudienceNetwork.git", "6.15.0"..<"7.0.0"),
     ],
     targets: [
@@ -98,7 +101,6 @@ let package = Package(
             name: "MSPGoogleAdapterSPM",
             dependencies: [
                 "MSPCoreSPM", "MSPGoogleAdsTypes", "MSPGoogleAdapter",
-                .product(name: "GoogleMobileAds", package: "swift-package-manager-google-mobile-ads"),
             ]
         ),
         .target(
